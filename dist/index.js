@@ -622,7 +622,9 @@ function getRunnerToolCache() {
 // Rubies prebuilt by this action embed this path rather than using $RUNNER_TOOL_CACHE
 function getDefaultToolCachePath() {
   const platform = getOSNameVersion()
-  if (platform.startsWith('ubuntu-')) {
+  if (process.env['RUNNER_TOOL_CACHE']) {
+    return process.env['RUNNER_TOOL_CACHE'];
+  } else if (platform.startsWith('ubuntu-')) {
     return '/opt/hostedtoolcache'
   } else if (platform.startsWith('macos-')) {
     return '/Users/runner/hostedtoolcache'
@@ -636,7 +638,7 @@ function getDefaultToolCachePath() {
 // tc.find() but using RUNNER_TOOL_CACHE=getToolCachePath()
 function toolCacheFind(engine, version) {
   const originalToolCache = getToolCachePath()
-  process.env['RUNNER_TOOL_CACHE'] = getToolCachePath()
+  process.env['RUNNER_TOOL_CACHE'] ??= getToolCachePath()
   try {
     return tc.find(engineToToolCacheName(engine), version)
   } finally {
